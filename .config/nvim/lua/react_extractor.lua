@@ -531,6 +531,20 @@ local function do_extract(opts)
   end)
 end
 
+-- ────────────────────────────── Test hook ────────────────────────────────────
+-- Exposed so the standalone test script can reach internal functions without
+-- going through the full Neovim buffer API.
+M._t = {
+  get_declarations        = get_declarations,
+  get_used                = get_used,
+  build_component         = build_component,
+  build_usage             = build_usage,
+  infer_type_heuristic    = infer_type_heuristic,
+  parse_hover_type        = parse_hover_type,
+  min_indent              = min_indent,
+  is_component_declaration = is_component_declaration,
+}
+
 -- ────────────────────────────── Public API ───────────────────────────────────
 
 function M.extract()      do_extract({ new_file = false }) end
