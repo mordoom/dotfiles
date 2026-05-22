@@ -338,7 +338,7 @@ local function build_component(name, props, body, default_export)
     param = "{\n  " .. table.concat(names, ",\n  ") .. "\n}: " .. name .. "Props"
   end
 
-  local prefix = default_export and "export default function " or "function "
+  local prefix = default_export and "export function " or "function "
   out[#out + 1] = prefix .. name .. "(" .. param .. ") {"
   out[#out + 1] = "  return ("
 
@@ -490,7 +490,7 @@ local function do_extract(opts)
 
       -- Add import statement after last import in original file
       local rel       = "./" .. name
-      local imp_line  = 'import ' .. name .. " from '" .. rel .. "';"
+      local imp_line  = 'import { ' .. name .. " } from '" .. rel .. "';"
       local last_imp  = find_last_import_line(bufnr)
       local ins_at    = last_imp > 0 and last_imp or 0
       vim.api.nvim_buf_set_lines(bufnr, ins_at, ins_at, false, { imp_line })
