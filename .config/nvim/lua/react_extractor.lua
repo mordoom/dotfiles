@@ -113,19 +113,19 @@ end
 
 local function get_lsp_type(bufnr, lnum, col)
   local params = {
-    textDocument = { uri = vim.uri_from_bufnr(bufnr) },
+    textDocument = { uri = vim.uri_from_fname(vim.api.nvim_buf_get_name(bufnr)) },
     position     = { line = lnum - 1, character = col - 1 },
   }
-  local ok, results = pcall(vim.lsp.buf_request_sync, bufnr, "textDocument/hover", params, 1500)
-  if not ok or not results then return nil end
-  for _, res in pairs(results) do
-    local r = res.result
-    if r and r.contents then
+  local clients = vim.lsp.get_clients({ bufnr = bufnr })
+  for _, client in ipairs(clients) do
+    local ok, result = pcall(client.request_sync, client, "textDocument/hover", params, 1500, bufnr)
+    if ok and result and result.result and result.result.contents then
+      local c = result.result.contents
       local text
-      if type(r.contents) == "string" then
-        text = r.contents
-      elseif type(r.contents) == "table" then
-        text = r.contents.value or (r.contents[1] and r.contents[1].value)
+      if type(c) == "string" then
+        text = c
+      elseif type(c) == "table" then
+        text = c.value or (c[1] and c[1].value)
       end
       if text then
         return parse_hover_type(text)
