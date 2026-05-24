@@ -1,2 +1,4 @@
 # Godot editor settings contain local paths and credentials
 .config/godot/editor_settings-*.tres
+
+.cfg
