@@ -1,0 +1,32 @@
+{
+  "Vitest Describe": {
+    "prefix": "desc",
+    "body": ["describe('$1', () => {", "\t$0", "});"],
+    "description": "Insert a Vitest describe block"
+  },
+  "Vitest Test": {
+    "prefix": "it",
+    "body": ["it('$1', async () => {", "\t$0", "});"],
+    "description": "Insert a Vitest test block"
+  },
+  "Vitest Async Test": {
+    "prefix": "ita",
+    "body": ["it('$1', async () => {", "\t$0", "});"],
+    "description": "Insert a Vitest async test block"
+  },
+  "Expect To Be": {
+    "prefix": "exp",
+    "body": "expect($1).toBe($2);",
+    "description": "expect(...).toBe(...)"
+  },
+  "Expect To Equal": {
+    "prefix": "expe",
+    "body": "expect($1).toEqual($2);",
+    "description": "expect(...).toEqual(...)"
+  },
+  "Vi Mock": {
+    "prefix": "vimock",
+    "body": ["vi.mock('$1', () => ({", "\t$0", "}));"],
+    "description": "Mock a module with vi.mock"
+  }
+}

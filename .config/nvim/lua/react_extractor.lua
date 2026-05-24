@@ -253,10 +253,9 @@ local function get_used(lines)
   for id in text:gmatch("%.%.%.([a-zA-Z_$][a-zA-Z0-9_$]*)") do
     definitely[id] = true
   end
-  -- JSX component names: <Capitalized
-  for id in text:gmatch("<([A-Z][a-zA-Z0-9_$]*)") do
-    definitely[id] = true
-  end
+  -- JSX component names (<Capitalized) are imported components, not props.
+  -- Only treat them as external if they also appear in an expression context,
+  -- which the patterns above will already have caught.
   -- identifier accessed as object root: {id. or (id. or ,id. or space+id.
   for id in text:gmatch("[{(,%s]([a-zA-Z_$][a-zA-Z0-9_$]*)%.") do
     maybe[id] = true  -- could still be declared locally
@@ -327,19 +326,20 @@ local function build_component(name, props, body, default_export)
     out[#out + 1] = ""
   end
 
-  local param
-  if #props == 0 then
-    param = ""
-  elseif #props == 1 then
-    param = "{ " .. props[1].name .. " }: " .. name .. "Props"
-  else
-    local names = {}
-    for _, p in ipairs(props) do names[#names + 1] = p.name end
-    param = "{\n  " .. table.concat(names, ",\n  ") .. "\n}: " .. name .. "Props"
-  end
-
   local prefix = default_export and "export function " or "function "
-  out[#out + 1] = prefix .. name .. "(" .. param .. ") {"
+  if #props == 0 then
+    out[#out + 1] = prefix .. name .. "() {"
+  elseif #props == 1 then
+    out[#out + 1] = prefix .. name .. "({ " .. props[1].name .. " }: " .. name .. "Props) {"
+  else
+    -- Multi-prop destructure: emit each param name on its own line.
+    out[#out + 1] = prefix .. name .. "({"
+    for i, p in ipairs(props) do
+      local comma = i < #props and "," or ""
+      out[#out + 1] = "  " .. p.name .. comma
+    end
+    out[#out + 1] = "}: " .. name .. "Props) {"
+  end
   out[#out + 1] = "  return ("
 
   local base = min_indent(body)
@@ -414,7 +414,10 @@ local function find_enclosing_component_end(bufnr, s_line)
         found_open = true
       elseif ch == "}" and found_open then
         depth = depth - 1
-        if depth == 0 then return i end
+        -- Skip depth-0 hits on the declaration line itself: destructured
+        -- params like `({ a, b }) =>` transiently reach depth 0 before the
+        -- function body `{` is seen.
+        if depth == 0 and i > comp_start then return i end
       end
     end
   end
@@ -535,14 +538,15 @@ end
 -- Exposed so the standalone test script can reach internal functions without
 -- going through the full Neovim buffer API.
 M._t = {
-  get_declarations        = get_declarations,
-  get_used                = get_used,
-  build_component         = build_component,
-  build_usage             = build_usage,
-  infer_type_heuristic    = infer_type_heuristic,
-  parse_hover_type        = parse_hover_type,
-  min_indent              = min_indent,
-  is_component_declaration = is_component_declaration,
+  get_declarations             = get_declarations,
+  get_used                     = get_used,
+  build_component              = build_component,
+  build_usage                  = build_usage,
+  infer_type_heuristic         = infer_type_heuristic,
+  parse_hover_type             = parse_hover_type,
+  min_indent                   = min_indent,
+  is_component_declaration     = is_component_declaration,
+  find_enclosing_component_end = find_enclosing_component_end,
 }
 
 -- ────────────────────────────── Public API ───────────────────────────────────
