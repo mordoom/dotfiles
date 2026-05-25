@@ -107,10 +107,10 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"
-
 export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
 
 eval "$(starship init zsh)"
 
 alias ll="eza -l --icons --git"
+export PATH="$HOME/.local/bin:$PATH"
+alias config='/usr/bin/git --git-dir=/home/alexm/.cfg/ --work-tree=/home/alexm'

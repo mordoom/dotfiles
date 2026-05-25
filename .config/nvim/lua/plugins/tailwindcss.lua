@@ -1,22 +1,22 @@
- return {
-   {
-     "neovim/nvim-lspconfig",
-     opts = {
-       servers = {
-         tailwindcss = {
-           settings = {
-             tailwindCSS = {
-               experimental = {
-                 classRegex = {
-                   { "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
-                   { "cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
-                   { "cn\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
-                 },
-               },
-             },
-           },
-         },
-       },
-     },
-   },
- }
+return {
+  {
+    "neovim/nvim-lspconfig",
+    opts = {
+      servers = {
+        tailwindcss = {
+          settings = {
+            tailwindCSS = {
+              experimental = {
+                classRegex = {
+                  { "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
+                  { "cx\\(([^)]*)\\)",  "(?:'|\"|`)([^']*)(?:'|\"|`)" },
+                  { "cn\\(([^)]*)\\)",  "(?:'|\"|`)([^']*)(?:'|\"|`)" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
